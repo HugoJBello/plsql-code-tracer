@@ -21,7 +21,7 @@ public class App {
 //		data.findMethods();
 
 		//data.findSql();
-		File file = new File("D:/hugo_documentos/otros_java/pl_code_para_rastreo_de_tablas/TP-2016-000051_copia");
+		File file = new File("D:/hugo_documentos/otros_java/pl_code_para_rastreo_de_tablas/sample");
 		//File file = new File("D:/hugo_documentos/otros_java/pl_code_para_rastreo_de_tablas");
 
 		MethodListConstructor constr = new MethodListConstructor();
