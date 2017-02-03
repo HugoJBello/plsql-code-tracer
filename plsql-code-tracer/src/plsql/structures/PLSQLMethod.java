@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import tools.strings.ParenthesisExtractor;
+
 public class PLSQLMethod {
 	private String methodName = "";
 	private ArrayList<String> tablesAccessed= new ArrayList<String>();
@@ -74,10 +76,10 @@ public class PLSQLMethod {
 					if (m.find()) { 
 						String call = m.group(0);
 						if (!( line.contains("PACKAGE") || line.contains("FUNCTION") || call.contains(".NEXT") || call.contains("--")|| call.contains(".next") || call.contains(".EXISTS") || call.contains(".exists"))){
-							PLCall c = new PLCall();
-							String lineAux = line.split("\\(")[0].trim();
-							c.setMethodName(lineAux.split(" ")[lineAux.split(" ").length -1]);
-							listOfCalls.add(c); 
+							//							PLCall c = new PLCall();
+							//							String lineAux = line.split("\\(")[0].trim();
+							//							c.setMethodName(lineAux.split(" ")[lineAux.split(" ").length -1]);
+							//							listOfCalls.add(c); 
 							tracingCall = true;
 						}
 					}
@@ -89,6 +91,24 @@ public class PLSQLMethod {
 			}
 			if (tracingCall && line.contains(");")){
 				tracingCall= false;
+				contextCall=contextCall.replace("\n", " ");
+				ParenthesisExtractor extractor = new ParenthesisExtractor(contextCall);
+				extractor.setText(contextCall);
+				extractor.setSUBSTITUTIONSTRING(":::");
+				extractor.setWithSubstitutionString(true);
+				extractor.extractLayers(contextCall);
+				for (ArrayList<String> layer : extractor.getLayer()){
+					for (String str : layer){
+						PLCall c = new PLCall();  
+						//%TODO for some reason if I replace ";" by "" fails.
+						if (str.contains(":::")){
+							String lineAux = str.split(":::")[0].trim();                      
+							c.setMethodName(lineAux.split(" ")[lineAux.split(" ").length -1]); 
+							listOfCalls.add(c);    
+						}
+					}
+
+				}
 				int num = contextCall.split(",").length;
 				listOfCalls.get(listOfCalls.size()-1).setNumEntries(num);
 				listOfCalls.get(listOfCalls.size()-1).setContextCall(contextCall);
@@ -97,45 +117,22 @@ public class PLSQLMethod {
 			if ((tracingCall && line.contains("IF")&& line.contains(")"))|| (tracingCall && line.contains("if")&& line.contains(")"))){
 				tracingCall= false;
 				int num = contextCall.split(",").length;
-				listOfCalls.get(listOfCalls.size()-1).setNumEntries(num);
-				listOfCalls.get(listOfCalls.size()-1).setContextCall(contextCall);
+				if (listOfCalls.size() > 0){
+					listOfCalls.get(listOfCalls.size()-1).setNumEntries(num);
+					listOfCalls.get(listOfCalls.size()-1).setContextCall(contextCall);
+				}
 				contextCall="";
 			}
 
 		}
+		//cleanListOfCalls();
 	}
 
-//	public void obtainEntries(){
-//		boolean tracingHeading = true;
-//		int count=0;
-//		int i=0;
-//
-//		for (String line: methodCodeLines){
-//
-//			if (i>0){ 
-//
-//				if (tracingHeading) {
-//					//#TODO
-//					if( line.contains("RETURN")){
-//						numberEntries = count;
-//						tracingHeading=false;
-//						count = 0;
-//					}
-//					if( line.contains("--")){
-//						numberEntries = count;
-//						tracingHeading=false;
-//						
-//					}
-//				} else {
-//					count++;
-//				}
-//
-//				 
-//			}
-//			
-//		}
-//		i++;
-//	}
+	//	public void cleanListOfCalls() {
+	//		for (PLCall call : this.getListOfCalls()){
+	//			call.setMethodName(call.getMethodName().replace(";",""));
+	//		}
+	//	}
 	public ArrayList<String> getTablesAccessed() {
 		return tablesAccessed;
 	}
