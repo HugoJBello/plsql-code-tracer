@@ -11,7 +11,7 @@ public class App {
 	public static void main(String[] args) throws IOException {
 		Path pathInput = Paths.get("package.spb");
 
-		File file = new File("D:/hugo_documentos/otros_java/pl_code_para_rastreo_de_tablas/sample");
+		File file = new File("C:\\hugo_documentos\\pl_code_para_rastreo_de_tablas\\pl_code_para_rastreo_de_tablas\\sample");
 		MethodListConstructor constr = new MethodListConstructor();
 		constr.addPackagesToList(file);
 		//constr.addSynonymsToPackages(file);
@@ -21,7 +21,7 @@ public class App {
 		tr.setListOfPackages(constr.getListOfPackages());
 
 
-		tr.trace("fp_tab_real", "em_k_ld_agravante_trn", 14);
+		tr.trace("funct_1", "pk_1", 14);
 		
 		
 	}

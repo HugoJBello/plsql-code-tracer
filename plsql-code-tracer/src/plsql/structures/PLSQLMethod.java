@@ -99,7 +99,6 @@ public class PLSQLMethod {
 				extractor.extractLayers(contextCall);
 				for (ArrayList<String> layer : extractor.getLayer()){
 					for (String str : layer){
-						//%TODO for some reason if I replace ";" by "" fails.
 						if (str.contains(":::")){
 							PLCall c = new PLCall();  
 							String lineAux = str.split(":::")[0].trim();                      
